@@ -211,6 +211,11 @@ tempCodeRunnerFile.py
 
 # Marimo
 marimo/_static/
+
+# Fitness Agent specific
+data/chroma_db/
+database/fitness.db
+data/docs/
 marimo/_lsp/
 __marimo__/
 
