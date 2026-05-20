@@ -73,17 +73,21 @@ You: What is progressive overload?
 Agent: 📚 Based on scientific documents: ...
 
 ## Project Structure
+
+```
 fitness-agent/
-├── agent.py          # Main agent logic
-├── AGENTS.md         # Agent identity and capabilities
+├── agent.py              # Main agent logic
+├── AGENTS.md             # Agent identity and capabilities
+├── requirements.txt      # Python dependencies
 ├── database/
-│   └── db.py         # SQLite setup
+│   └── db.py             # SQLite setup
 ├── memory/
-│   └── chroma.py     # ChromaDB / RAG setup
+│   └── chroma.py         # ChromaDB / RAG setup
 ├── tools/
-│   └── calculations.py # Training & nutrition tools
+│   └── calculations.py   # Training & nutrition tools
 └── data/
-└── docs/         # Scientific PDFs for RAG
+    └── docs/             # Scientific PDFs for RAG
+```
 
 ## Academic Context
 Developed as part of an Agentic AI seminar project.
