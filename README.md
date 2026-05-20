@@ -49,11 +49,12 @@ pip install -r requirements.txt
 
 ### Configuration
 Create a `.env` file:
-GWDG_API_KEY=your_key_here,
-LANGCHAIN_API_KEY=your_key_here,
-LANGCHAIN_TRACING_V2=true,
+```
+GWDG_API_KEY=your_key_here
+LANGCHAIN_API_KEY=your_key_here
+LANGCHAIN_TRACING_V2=true
 LANGCHAIN_PROJECT=fitness-agent
-
+```
 ### Load documents into ChromaDB
 ```bash
 python memory/chroma.py
@@ -68,8 +69,10 @@ python agent.py
 ```
 You: Benchpress 100kg 3x8, Squats 120kg 4x6
 Agent: 💪 Workout saved! 2 exercise(s) logged
+
 You: What did I train recently?
 Agent: 📊 Your recent workouts: ...
+
 You: What is progressive overload?
 Agent: 📚 Based on scientific documents: ...
 ```
