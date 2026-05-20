@@ -1,4 +1,4 @@
-# Fitness Coaching Agent 🏋️
+# Fitness Agent 🏋️
 
 A conversational AI agent that helps strength athletes track workouts, 
 analyze progression, and get evidence-based training advice — all in one place.
