@@ -8,7 +8,7 @@ Tracking workouts across multiple apps is tedious and often gets skipped.
 This agent lets you log workouts in natural language after training, 
 stores your progression, and answers training questions based on scientific documents.
 
-## Features (Sprint 1 & 2)
+## Features
 - Natural language workout logging
 - Workout history retrieval
 - RAG-based training knowledge (scientific PDFs via ChromaDB)
