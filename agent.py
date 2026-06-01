@@ -17,6 +17,7 @@ load_dotenv()
 # LLM setup via GWDG API
 llm = ChatOpenAI(
     model="llama-3.3-70b-instruct",
+    #model="llama-3.1-8b-instruct",
     api_key=os.getenv("GWDG_API_KEY"),
     base_url="https://chat-ai.academiccloud.de/v1"
 )
@@ -85,7 +86,7 @@ def get_recent_workouts():
     result = "📊 Deine letzten Workouts:\n"
     result += "-" * 40 + "\n"
     for row in rows:
-        result += f"📅 {row[0]} | 💪 {row[1]} | ⚖️ {row[2]}kg | {row[3]} Sätze x {row[4]} Wdh\n"
+        result  += f"📅 {row[0]} | 💪 {row[1]} | ⚖️ {row[2]}kg | {row[3]} {'Satz' if row[3] == 1 else 'Sätze'} x {row[4]} Wdh\n"
     return result
 
 def parse_response(response_text: str):

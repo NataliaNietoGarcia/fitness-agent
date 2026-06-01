@@ -1,6 +1,6 @@
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import os
 
@@ -21,16 +21,25 @@ def load_documents():
     all_docs = []
 
     for filename in os.listdir(docs_path):
+        filepath = os.path.join(docs_path, filename)
+
         if filename.endswith(".pdf"):
             print(f"Loading: {filename}")
             loader = PyPDFLoader(os.path.join(docs_path, filename))
             pages = loader.load()
             all_docs.extend(pages)
+        elif filename.endswith(".md") or filename.endswith(".txt"):
+            print(f"Loading text: {filename}")
+            loader = TextLoader(filepath, encoding="utf-8")
+            pages = loader.load()
+            all_docs.extend(pages)
 
     # Split text into chunks for vector storage
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=50
+        chunk_size=1500,
+        chunk_overlap=150,
+        separators=["\n## ", "\n### ", "\n\n", "\n"]
+
     )
     chunks = splitter.split_documents(all_docs)
     print(f"✅ {len(chunks)} chunks created")
