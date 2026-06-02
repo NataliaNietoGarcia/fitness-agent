@@ -1,6 +1,9 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
-from database.db import get_connection, create_tables, get_user_profile, save_user_profile, update_user_goal, log_weight, get_weight_history
+from database.db import (get_connection, create_tables, get_user_profile, save_user_profile, update_user_goal, log_weight, get_weight_history)
+from tools.calculations import (calculate_tdee, calculate_macros, 
+                                  calculate_1rm, calculate_volume, 
+                                  get_pr, detect_plateau)
 from dotenv import load_dotenv
 import os
 import json
@@ -65,6 +68,36 @@ If the user asks about their weight history or progress, respond ONLY with:
 If the user asks what they trained recently, respond ONLY with:
 {
     "action": "get_workouts"
+}
+
+If the user asks for their calorie needs or macros, respond ONLY with:
+{
+    "action": "calculate_macros"
+}
+
+If the user asks for their PR (personal record) of an exercise, respond ONLY with:
+{
+    "action": "get_pr",
+    "exercise": "exercise name"
+}
+
+If the user asks about a plateau, respond ONLY with:
+{
+    "action": "detect_plateau",
+    "exercise": "exercise name"
+}
+
+If the user asks about training volume, respond ONLY with:
+{
+    "action": "get_volume",
+    "exercise": "exercise name"
+}
+
+If the user asks for their 1RM, respond ONLY with:
+{
+    "action": "calculate_1rm",
+    "weight_kg": 0.0,
+    "reps": 0
 }
 
 If the user asks a question about training or nutrition, respond ONLY with:
@@ -213,6 +246,30 @@ def get_progress_summary():
     
     return result
 
+def get_macros_for_user():
+    profil = get_user_profile()
+    if not profil:
+        return "❌ No profile found! Please create your profile first."
+    
+    _, name, gender, height, birth_year, activity, goal, _, _ = profil
+    age = date.today().year - birth_year
+    
+    weight_history = get_weight_history(1)
+    if not weight_history:
+        return "❌ No weight logged yet! Tell me 'I weigh X kg' first."
+    
+    current_weight = weight_history[0][1]
+    tdee = calculate_tdee(current_weight, height, age, gender, activity)
+    macros = calculate_macros(tdee, goal, current_weight)
+    
+    return f"""Your nutrition targets ({goal}):
+-----------------------------
+⚡ TDEE: {tdee} kcal
+🎯 Target calories: {macros['calories']} kcal
+🥩 Protein: {macros['protein_g']}g
+🍚 Carbs: {macros['carbs_g']}g
+🥑 Fat: {macros['fat_g']}g"""
+
 #############CHAT#########################
 # Conversation history with max limit to control context window
 MAX_HISTORY = 10
@@ -272,6 +329,22 @@ def chat(user_input):
 
         elif action == "get_progress":
             return get_progress_summary()
+        
+        elif action == "calculate_macros":
+            return get_macros_for_user()
+
+        elif action == "get_pr":
+            return get_pr(data["exercise"])
+
+        elif action == "detect_plateau":
+            return detect_plateau(data["exercise"])
+
+        elif action == "get_volume":
+            return calculate_volume(data["exercise"])
+
+        elif action == "calculate_1rm":
+            result = calculate_1rm(data["weight_kg"], data["reps"])
+            return f"💪 Estimated 1RM: {result}kg"
 
         elif action == "search_knowledge":
             context = suche_in_docs(data["question"])
