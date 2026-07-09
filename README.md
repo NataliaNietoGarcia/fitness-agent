@@ -1,27 +1,55 @@
 # Fitness Agent 🏋️
 
 A conversational AI agent that helps strength athletes track workouts, nutrition,
-and progression — and get evidence-based training advice, all in one place.
+and progression — and get evidence-based coaching, all in one place.
 
 ## Problem
 Tracking workouts and nutrition usually means juggling several apps and entering
 data manually during training. This agent lets you log everything in natural
-language, stores your progression, calculates your nutrition targets, and answers
-training questions based on scientific sources — through one simple chat interface.
+language, stores your progression, calculates your nutrition targets, and gives
+science-based coaching feedback — through one simple chat interface, on desktop
+or smartphone.
 
 ## Features
-- **Natural language workout logging** — "Yesterday I did bench press 80kg 3x8"
-- **Persistent user profile** — remembers who you are across sessions
-- **Weight tracking** with history and progress overview
-- **Goal history** — every goal change is recorded, not overwritten
-- **Nutrition module** — log food, get calories & macros (based on the official German BLS food database)
-- **Daily nutrition overview** — calories and macros eaten vs. remaining
-- **Calculation tools** — TDEE, macros, 1RM, training volume, PR detection, automatic plateau detection
-- **RAG knowledge base** — answers training/nutrition questions from a curated scientific knowledge base (ChromaDB)
-- **Date awareness** — understands "yesterday", "last Monday" and logs to the correct date
-- **Conversation memory** — remembers the context of the current conversation
-- **Visualizations** — charts for weight, exercise progression and training volume
-- **Streamlit web interface** — usable on desktop and smartphone
+
+### Training
+- Natural language workout logging (e.g. "Yesterday bench press 80kg 3x8")
+- Workout history retrieval
+- Personal Records (PR) per exercise
+- Automatic plateau detection
+- Training volume (per exercise or overall, weekly)
+- 1RM calculation (Epley formula)
+- Plausibility checks on logged values (e.g. flags an implausible 12kg leg press)
+- Science-based training coaching feedback, automatic after logging and on demand
+
+### Nutrition
+- Natural language food logging, matched against the official German food
+  database (BLS 4.0, ~7,140 items)
+- Automatic portion size estimation when no amount is given
+- Smart food matching — picks the most likely match automatically, only asks
+  when genuinely ambiguous
+- LLM-suggested alternative search terms when a food isn't found directly
+  (e.g. "Hafermilch" → "Haferdrink")
+- Correct previously logged food via chat (e.g. "I meant it grilled, not raw")
+- Daily and weekly nutrition overview, with a custom date range in the app
+- Calorie/macro targets (TDEE-based, personalized by goal) and remaining
+  calories/macros for the day
+- Science-based nutrition coaching feedback, automatic after logging and on demand
+
+### Profile & Progress
+- Profile creation via form (in the app) or natural language (in chat)
+- Weight tracking with history
+- Goal history — every change is recorded, not overwritten
+- Progress charts: weight, exercise progression, training volume
+
+### Knowledge
+- Answers training and nutrition questions from a curated scientific knowledge
+  base (RAG via ChromaDB) — not just the model's general knowledge
+
+### Design principle
+Facts come from the database, scientific thresholds come from the RAG knowledge
+base, and the LLM combines both to write the actual feedback — no hardcoded
+nutrition/training thresholds in the code.
 
 ## Tech Stack
 | Component | Technology |
@@ -83,6 +111,12 @@ python agent.py
 streamlit run app.py
 ```
 
+### Optional: demo data
+`demo_setup.py` fills the app with 4 weeks of sample workouts, weight, and
+nutrition history for a demo profile — useful for trying out charts and
+coaching feedback without logging weeks of real data first. See the comments
+at the bottom of the file for usage.
+
 ## Usage
 ```
 You: Yesterday I did bench press 80kg 3x8, squats 100kg 4x6
@@ -94,6 +128,10 @@ Agent: 🍽️ Saved: ... 525 kcal | P:66g C:42g F:8g
 You: How many calories do I have left?
 Agent: 🎯 Target: 3136 kcal | Eaten: 614 | Remaining: 2522
 
+You: How's my nutrition looking today?
+Agent: 🍎 Your protein intake is a bit behind target for this time of day...
+       (based on ISSN guidelines)
+
 You: How does progressive overload work?
 Agent: 📚 Based on scientific sources: ...
 ```
@@ -101,27 +139,31 @@ Agent: 📚 Based on scientific sources: ...
 ## Project Structure
 ```
 fitness-agent/
-├── agent.py              # Main agent logic
-├── app.py                # Streamlit web interface
-├── AGENTS.md             # Agent identity and capabilities
-├── requirements.txt      # Python dependencies
+├── agent.py               # Main agent logic
+├── app.py                 # Streamlit web interface
+├── demo_setup.py           # Generates sample data for demos/videos
+├── AGENTS.md               # Agent identity and capabilities
+├── requirements.txt        # Python dependencies
+├── .streamlit/
+│   └── config.toml         # App theme
+├── static/
+│   └── logo.png             # App logo
 ├── database/
-│   └── db.py             # SQLite setup & data functions
+│   └── db.py                # SQLite setup & data functions
 ├── memory/
-│   └── chroma.py         # ChromaDB / RAG setup
+│   └── chroma.py             # ChromaDB / RAG setup
 ├── tools/
-│   ├── calculations.py   # TDEE, macros, 1RM, volume, PR, plateau
-│   ├── nutrition.py      # Food lookup (BLS + Open Food Facts fallback)
-│   ├── import_bls.py     # Imports the BLS food database
-│   └── charts.py         # Data preparation for visualizations
+│   ├── calculations.py       # TDEE, macros, 1RM, volume, PR, plateau
+│   ├── nutritrion.py          # Food lookup (BLS database)
+│   ├── import_bls.py          # Imports the BLS food database
+│   └── charts.py               # Data preparation for visualizations
 └── data/
-    └── docs/             # Curated scientific knowledge base for RAG
+    └── docs/                   # Curated scientific knowledge base for RAG
 ```
 
 ## Data Sources
 - **Nutrition data:** Bundeslebensmittelschlüssel (BLS) 4.0, © Max Rubner-Institut, licensed under CC BY 4.0
-- **Branded products (fallback):** Open Food Facts
-- **Training knowledge (RAG):** curated from peer-reviewed sources (Schoenfeld et al., ISSN Position Stands, Plotkin et al.)
+- **Training knowledge (RAG):** curated from peer-reviewed sources (Schoenfeld et al., ISSN Position Stands, Plotkin et al., Helms et al., WHO guidelines)
 
 ## Academic Context
 Developed as part of an Agentic AI seminar project.
