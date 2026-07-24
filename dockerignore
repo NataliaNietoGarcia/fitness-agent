@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.git
+.gitignore
+env/
+fitness-agent-env/
+.env
+database/fitness.db
+data/chroma_db/
+.streamlit/secrets.toml

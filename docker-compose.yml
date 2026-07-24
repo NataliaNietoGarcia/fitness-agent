@@ -1,0 +1,13 @@
+services:
+  fitness-agent:
+    build: .
+    container_name: fitness-agent
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    volumes:
+      # Persist the SQLite database and vector store across container restarts
+      - ./database:/app/database
+      - ./data/chroma_db:/app/data/chroma_db
+    restart: unless-stopped
