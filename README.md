@@ -3,6 +3,13 @@
 A conversational AI agent that helps strength athletes track workouts, nutrition,
 and progression — and get evidence-based coaching, all in one place.
 
+## Demo Video
+
+[![Watch the demo](https://img.shields.io/badge/▶-Watch%20Demo%20Video-EA5B0C?style=for-the-badge)](https://drive.google.com/file/d/1TY-pqsu1-zaTsclJ_xBaPOHxSCkb2blR/view?usp=sharing)
+
+A 2-3 minute walkthrough of the agent in action — profile creation, workout and
+food logging, progression tracking, and science-based coaching feedback.
+
 ## Problem
 Tracking workouts and nutrition usually means juggling several apps and entering
 data manually during training. This agent lets you log everything in natural
@@ -111,6 +118,24 @@ python agent.py
 streamlit run app.py
 ```
 
+### Run with Docker (recommended for deployment)
+
+Requires Docker and Docker Compose. Make sure your `.env` file exists first
+(see Configuration above).
+
+```bash
+docker compose up --build
+```
+
+The app will be available at `http://localhost:8501`. The SQLite database and
+ChromaDB vector store are persisted in `./database` and `./data/chroma_db` via
+volume mounts, so your data survives container restarts.
+
+To stop it:
+```bash
+docker compose down
+```
+
 ### Optional: demo data
 `demo_setup.py` fills the app with 4 weeks of sample workouts, weight, and
 nutrition history for a demo profile — useful for trying out charts and
@@ -143,7 +168,10 @@ fitness-agent/
 ├── app.py                 # Streamlit web interface
 ├── demo_setup.py           # Generates sample data for demos/videos
 ├── AGENTS.md               # Agent identity and capabilities
+├── CHANGELOG.md             # Full development history by sprint
 ├── requirements.txt        # Python dependencies
+├── Dockerfile               # Container image definition
+├── docker-compose.yml        # Container orchestration & volumes
 ├── .streamlit/
 │   └── config.toml         # App theme
 ├── static/
@@ -160,6 +188,8 @@ fitness-agent/
 └── data/
     └── docs/                   # Curated scientific knowledge base for RAG
 ```
+
+See [CHANGELOG.md](./CHANGELOG.md) for the full development history, sprint by sprint.
 
 ## Data Sources
 - **Nutrition data:** Bundeslebensmittelschlüssel (BLS) 4.0, © Max Rubner-Institut, licensed under CC BY 4.0
